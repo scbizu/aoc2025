@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"slices"
 
 	"github.com/magejiCoder/magejiAoc/input"
 )
@@ -36,6 +35,40 @@ func (b bank) pick2() int {
 		}
 	}
 	return max
+}
+
+func (b *bank) pickGreedy() int {
+	n := len(b.batteries)
+	const L = 12
+	if n < L {
+		b.max = 0
+		return b.max
+	}
+
+	res := 0
+	start := 0
+	for k := range L {
+		// The farthest we can start searching so that we still have enough digits left:
+		// we must leave (L-k-1) digits after our choice.
+		end := n - (L - k - 1)
+		bestDigit := byte('0' - 1)
+		bestPos := start
+		for i := start; i < end; i++ {
+			d := b.batteries[i]
+			if d > bestDigit {
+				bestDigit = d
+				bestPos = i
+				// Early exit if we find '9'
+				if bestDigit == '9' {
+					break
+				}
+			}
+		}
+		res = res*10 + int(bestDigit-'0')
+		start = bestPos + 1
+	}
+	b.max = res
+	return b.max
 }
 
 func (b *bank) pick(raw []byte, cur []byte) {
@@ -89,9 +122,7 @@ func p2() {
 	var sum int
 	txt.ReadByLine(ctx, func(line string) error {
 		s := fromString(line)
-		btys := slices.Clone(s.batteries)
-		s.pick(btys, []byte{})
-		sum += s.max
+		sum += s.pickGreedy()
 		return nil
 	})
 
