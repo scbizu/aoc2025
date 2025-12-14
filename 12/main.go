@@ -20,7 +20,6 @@ type present struct {
 }
 
 type region struct {
-	cols, rows int
 	// ava 表示可用区域
 	ava          grid.VecMatrix[struct{}]
 	needPresents []acquiredPresent
@@ -98,11 +97,6 @@ func p1() {
 					r.ava.Add(grid.Vec{X: i, Y: j}, struct{}{})
 				}
 			}
-			// gridParts[0] is cols (width), gridParts[1] is rows (height)
-			// Our coordinate system uses X as row index and Y as col index:
-			//   X in [0, rows), Y in [0, cols)
-			r.cols = input.Atoi(gridParts[0])
-			r.rows = input.Atoi(gridParts[1])
 
 			// part 1 is the needed presents
 			pparts := strings.Split(lps[1], " ")
